@@ -18,6 +18,8 @@ module.exports = function ( grunt ) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-ng-annotate');
   grunt.loadNpmTasks('grunt-html2js');
+  grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-protractor-runner');
 
   /**
    * Load in our build configuration file.
@@ -544,6 +546,46 @@ module.exports = function ( grunt ) {
           livereload: false
         }
       }
+    },
+    'http-server': {
+      'dev': {
+        // the server root directory
+        root: 'build',
+
+        // the server port
+        // can also be written as a function, e.g.
+        // port: function() { return 8282; }
+        port: 8000,
+
+        // the host ip address
+        // If specified to, for example, "127.0.0.1" the server will
+        // only be available on that ip.
+        // Specify "0.0.0.0" to be available everywhere
+        host: "0.0.0.0",
+
+
+        showDir : true,
+        autoIndex: true,
+
+        // server default file extension
+        ext: "html"
+      }
+    },
+    protractor: {
+      options: {
+        configFile: "node_modules/protractor/example/conf.js", // Default config file
+        keepAlive: true, // If false, the grunt process stops when the test fails.
+        noColor: false, // If true, protractor will not use colors in its output.
+        args: {
+          // Arguments passed to the command
+        }
+      },
+      e2e: {   // Grunt requires at least one target to run so you can simply put 'all: {}' here too.
+        options: {
+          configFile: "e2e.conf.js", // Target-specific config file
+          args: {} // Target-specific arguments
+        }
+      }
     }
   };
 
@@ -558,6 +600,9 @@ module.exports = function ( grunt ) {
    */
   grunt.renameTask( 'watch', 'delta' );
   grunt.registerTask( 'watch', [ 'build', 'karma:unit', 'delta' ] );
+  grunt.registerTask( 'run', [ 'build', 'karma:unit', 'http-server:dev' ] );
+  grunt.registerTask( 'test', [ 'build', 'karma:unit', 'protractor' ] );
+
 
   /**
    * The default task is to build and compile.
@@ -616,7 +661,7 @@ module.exports = function ( grunt ) {
     });
 
     grunt.file.copy('src/index.html', this.data.dir + '/index.html', { 
-      process: function ( contents, path ) {
+      process: function ( contents ) {
         return grunt.template.process( contents, {
           data: {
             scripts: jsFiles,
@@ -637,7 +682,7 @@ module.exports = function ( grunt ) {
     var jsFiles = filterForJS( this.filesSrc );
     
     grunt.file.copy( 'karma/karma-unit.tpl.js', grunt.config( 'build_dir' ) + '/karma-unit.js', { 
-      process: function ( contents, path ) {
+      process: function ( contents ) {
         return grunt.template.process( contents, {
           data: {
             scripts: jsFiles

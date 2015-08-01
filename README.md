@@ -55,6 +55,8 @@ This will find the latest versions that match the version ranges specified in th
 
 ### Running the App during Development
 
+`npm start`
+
 The angular-seed project comes preconfigured with a local development webserver.  It is a node.js
 tool called [http-server].  You can install http-server globally:
 
@@ -72,3 +74,8 @@ http-server -a localhost -p 8000
 Alternatively, you can choose to configure your own webserver, such as apache or nginx. Just
 configure your server to serve the files under the `bulid/` directory.
 
+### Running e2e tests
+
+`node_modules/protractor/bin/webdriver-manager update`
+
+`node_modules/protractor/bin/protractor  protractor_conf.js`
